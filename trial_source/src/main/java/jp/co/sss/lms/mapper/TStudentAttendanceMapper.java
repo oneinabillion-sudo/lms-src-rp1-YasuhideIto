@@ -13,6 +13,7 @@ import jp.co.sss.lms.entity.TStudentAttendance;
  * 勤怠情報（受講生入力）テーブルマッパー
  * 
  * @author 東京ITスクール
+ * @author Yasuhide Ito
  */
 @Mapper
 public interface TStudentAttendanceMapper {
@@ -25,7 +26,7 @@ public interface TStudentAttendanceMapper {
 	 * @return 勤怠情報（受講生入力）エンティティ
 	 */
 	List<TStudentAttendance> findByLmsUserId(@Param("lmsUserId") Integer lmsUserId,
-			@Param("deleteFlg") Short deleteFlg);
+											 @Param("deleteFlg") Short deleteFlg);
 
 	/**
 	 * 勤怠情報（受講生入力）取得（LMSユーザーID＆日付）
@@ -36,7 +37,8 @@ public interface TStudentAttendanceMapper {
 	 * @return 勤怠情報（受講生入力）エンティティ
 	 */
 	TStudentAttendance findByLmsUserIdAndTrainingDate(@Param("lmsUserId") Integer lmsUserId,
-			@Param("trainingDate") Date trainingDate, @Param("deleteFlg") Short deleteFlg);
+													  @Param("trainingDate") Date trainingDate,
+													  @Param("deleteFlg") Short deleteFlg);
 
 	/**
 	 * 勤怠管理画面用DTOリスト取得
@@ -47,7 +49,20 @@ public interface TStudentAttendanceMapper {
 	 * @return 勤怠管理画面用DTOリスト
 	 */
 	List<AttendanceManagementDto> getAttendanceManagement(@Param("courseId") Integer courseId,
-			@Param("lmsUserId") Integer lmsUserId, @Param("deleteFlg") Short deleteFlg);
+														  @Param("lmsUserId") Integer lmsUserId,
+														  @Param("deleteFlg") Short deleteFlg);
+
+	/**
+	 * 現在日時より前日付で勤怠未入力を取得
+	 * 
+	 * @param lmsUserId
+	 * @param deleteFlg
+	 * @param trainingDate
+	 * @return 勤怠未入力数
+	 */
+	Integer notEnterCount(@Param("lmsUserId") Integer lmsUserId,
+						  @Param("deleteFlg") Short deleteFlg,
+						  @Param("trainingDate") Date trainingDate);
 
 	/**
 	 * 勤怠情報（受講生入力）登録
@@ -55,6 +70,7 @@ public interface TStudentAttendanceMapper {
 	 * @param tStudentAttendance
 	 * @return 登録結果
 	 */
+
 	Boolean insert(TStudentAttendance tStudentAttendance);
 
 	/**

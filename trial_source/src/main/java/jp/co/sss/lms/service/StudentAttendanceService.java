@@ -27,6 +27,7 @@ import jp.co.sss.lms.util.TrainingTime;
  * 勤怠情報（受講生入力）サービス
  * 
  * @author 東京ITスクール
+ * @author Yasuhide Ito
  */
 @Service
 public class StudentAttendanceService {
@@ -71,6 +72,23 @@ public class StudentAttendanceService {
 		}
 
 		return attendanceManagementDtoList;
+	}
+
+	/**
+	 * Task.25 過去日の未入力チェック
+	 * 
+	 * @return Boolean
+	 */
+	public Boolean notEnterCheck() {
+
+		int nECount = tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), (short) 0, new Date());
+
+		if (0 < nECount) {
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 	/**

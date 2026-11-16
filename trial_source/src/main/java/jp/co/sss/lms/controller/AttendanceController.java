@@ -20,6 +20,7 @@ import jp.co.sss.lms.util.Constants;
  * 勤怠管理コントローラ
  * 
  * @author 東京ITスクール
+ * @author Yasuhide Ito
  */
 @Controller
 @RequestMapping("/attendance")
@@ -40,12 +41,16 @@ public class AttendanceController {
 	 * @throws ParseException
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
-	public String index(Model model) {
+	public String index(Integer lmsUserId, Integer courseId, Model model) {
 
 		// 勤怠一覧の取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+
+		// 伊藤康秀 - Task.25
+		boolean isNotEnterCheck = studentAttendanceService.notEnterCheck();
+		model.addAttribute("notEnterCheckValue", isNotEnterCheck);
 
 		return "attendance/detail";
 	}
