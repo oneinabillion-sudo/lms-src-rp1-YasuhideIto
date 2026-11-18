@@ -3,7 +3,9 @@ package jp.co.sss.lms.service;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ public class StudentAttendanceService {
 	@Autowired
 	private LoginUserUtil loginUserUtil;
 	@Autowired
+	private TrainingTime trainingTime;
+	@Autowired
 	private LoginUserDto loginUserDto;
 	@Autowired
 	private TStudentAttendanceMapper tStudentAttendanceMapper;
@@ -60,7 +64,7 @@ public class StudentAttendanceService {
 				.getAttendanceManagement(courseId, lmsUserId, Constants.DB_FLG_FALSE);
 		for (AttendanceManagementDto dto : attendanceManagementDtoList) {
 			// 中抜け時間を設定
-			if (dto.getBlankTime() != null) {
+			if (dto.getBlankTime() != null) {// ここで1="欠席", 2="遅刻"とかやってると予想
 				TrainingTime blankTime = attendanceUtil.calcBlankTime(dto.getBlankTime());
 				dto.setBlankTimeValue(String.valueOf(blankTime));
 			}
@@ -228,11 +232,19 @@ public class StudentAttendanceService {
 	 * @param attendanceManagementDtoList
 	 * @return 勤怠編集フォーム
 	 */
+	
+	// Task.26改修箇所だよーん
 	public AttendanceForm setAttendanceForm(
 			List<AttendanceManagementDto> attendanceManagementDtoList) {
 
-		AttendanceForm attendanceForm = new AttendanceForm();
-		attendanceForm.setAttendanceList(new ArrayList<DailyAttendanceForm>());
+		
+		
+		
+		
+		// ↓のこれはDBから取得して詰めたDTOから画面表示するためのFormクラスに詰め替えてる処理
+		// 　乗り換えみたいなもん
+		AttendanceForm attendanceForm = new AttendanceForm();// インスタンス化した
+		attendanceForm.setAttendanceList(new ArrayList<DailyAttendanceForm>());//
 		attendanceForm.setLmsUserId(loginUserDto.getLmsUserId());
 		attendanceForm.setUserName(loginUserDto.getUserName());
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
@@ -246,6 +258,25 @@ public class StudentAttendanceService {
 					dateUtil.dateToString(loginUserDto.getLeaveDate(), "yyyy年M月d日"));
 		}
 
+		
+		// とりま時間、分マップ書く
+		
+				
+		
+				Map<Integer, String> getHourMap = new LinkedHashMap<>(); 
+				for(int i=0; i<24; i++) {
+					
+					getHourMap.put(i, String.format("%02d", i));
+				}
+				
+				Map<Integer, String> getMinutesMap = new LinkedHashMap<>();
+				for(int j=0; j<59; j++) {
+					
+					getMinutesMap.put(j, String.format("%02d", j));
+				}
+				
+				
+		
 		// 勤怠管理リストの件数分、日次の勤怠フォームに移し替え
 		for (AttendanceManagementDto attendanceManagementDto : attendanceManagementDtoList) {
 			DailyAttendanceForm dailyAttendanceForm = new DailyAttendanceForm();
@@ -253,14 +284,25 @@ public class StudentAttendanceService {
 					.setStudentAttendanceId(attendanceManagementDto.getStudentAttendanceId());
 			dailyAttendanceForm
 					.setTrainingDate(dateUtil.toString(attendanceManagementDto.getTrainingDate()));
+			
+			
+			
+			
 			dailyAttendanceForm
 					.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
-			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
+			
+			dailyAttendanceForm
+					.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
+			
+			
 			if (attendanceManagementDto.getBlankTime() != null) {
 				dailyAttendanceForm.setBlankTime(attendanceManagementDto.getBlankTime());
 				dailyAttendanceForm.setBlankTimeValue(String.valueOf(
 						attendanceUtil.calcBlankTime(attendanceManagementDto.getBlankTime())));
 			}
+			
+			
+			
 			dailyAttendanceForm.setStatus(String.valueOf(attendanceManagementDto.getStatus()));
 			dailyAttendanceForm.setNote(attendanceManagementDto.getNote());
 			dailyAttendanceForm.setSectionName(attendanceManagementDto.getSectionName());
@@ -270,9 +312,33 @@ public class StudentAttendanceService {
 			dailyAttendanceForm.setStatusDispName(attendanceManagementDto.getStatusDispName());
 
 			attendanceForm.getAttendanceList().add(dailyAttendanceForm);
-		}
+		}// ユーザー1人の勤怠情報1レコード分をfor分で繰り返してる
 
 		return attendanceForm;
+	}
+	
+	
+	
+	/*
+	 * 勤怠管理直接編集：
+	 * Controllerから渡される
+	 * 
+	 * @param attendanceForm
+	 * 
+	 * */
+	
+	public void formatConversion(AttendanceForm attendanceForm) {
+		
+		for(DailyAttendanceForm dailyAttendanceFormList : attendanceForm.getAttendanceList()) {
+			
+			if(null != dailyAttendanceFormList.getTrainingStartTime() && 
+			   null != dailyAttendanceFormList.getTrainingEndTime()) {
+				
+				
+			}
+			
+		}
+	
 	}
 
 	/**

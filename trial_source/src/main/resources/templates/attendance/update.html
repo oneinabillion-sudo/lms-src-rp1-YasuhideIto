@@ -47,14 +47,37 @@
 								</th:block>
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
+									<!--      Task.26改修範囲begin           -->
+									
+									
 								<td class="w70">
-									<input type="text" th:name="|attendanceList[${stat.index}].trainingStartTime|"
+									<select th:value="${dailyAttendanceForm.}">
+										<option >
+											
+										</option>
+									</select>
+									<select th:>
+										<option >
+											
+										</option>
+									</select>
+									<input type="" th:name="|attendanceList[${stat.index}].trainingStartTime|"
 									th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />
 								</td>
+								
 								<td class="w70">
+									<select th:>
+										<option >
+											
+										</option>
+									</select>
 									<input type="text" th:name="|attendanceList[${stat.index}].trainingEndTime|"
 									th:value="${dailyAttendanceForm.trainingEndTime}" class="form-control" />
 								</td>
+								
+								
+								
+									<!--      Task.26改修範囲end             -->
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control">
 										<option th:each="blankTime : ${attendanceForm.blankTimes}" th:value="${blankTime.key}" th:inlne="text" class="form-control" 

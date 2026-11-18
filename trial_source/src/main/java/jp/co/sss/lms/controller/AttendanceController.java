@@ -141,11 +141,20 @@ public class AttendanceController {
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
+		
+		// attendanceFormのなかの’何か’をhh:mm形式に加工する
+		attendanceForm = studentAttendanceService.formatConversion(attendanceForm);
+		
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-
+		
+		
+		/*
+		 *  Task.26改修箇所。多分更新ボタン押下したら/attendance/detailに遷移するときに更新した
+		 *  ら全件取得modelにつめて返す
+		 * */
 		return "attendance/detail";
 	}
 
