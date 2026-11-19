@@ -13,7 +13,7 @@ import jp.co.sss.lms.entity.TStudentAttendance;
  * 勤怠情報（受講生入力）テーブルマッパー
  * 
  * @author 東京ITスクール
- * @author Yasuhide Ito
+ * @author 伊藤康秀 - Task.25
  */
 @Mapper
 public interface TStudentAttendanceMapper {
@@ -55,6 +55,7 @@ public interface TStudentAttendanceMapper {
 	/**
 	 * 現在日時より前日付で勤怠未入力を取得
 	 * 
+	 * @author 伊藤康秀 - Task.25
 	 * @param lmsUserId
 	 * @param deleteFlg
 	 * @param trainingDate

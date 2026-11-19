@@ -5,8 +5,8 @@
 
 	<select id="findByLmsUserId"
 		resultType="jp.co.sss.lms.entity.TStudentAttendance">
-		SELECT *
-		
+		SELECT 
+			*	
 		FROM 
 			t_student_attendance
 		WHERE
@@ -19,8 +19,8 @@
 
 	<select id="findByLmsUserIdAndTrainingDate"
 		resultType="jp.co.sss.lms.entity.TStudentAttendance">
-		SELECT *
-		
+		SELECT
+			*
 		FROM
 			t_student_attendance
 		WHERE

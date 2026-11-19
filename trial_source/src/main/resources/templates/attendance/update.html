@@ -51,15 +51,9 @@
 									
 									
 								<td class="w70">
-									<select th:value="${dailyAttendanceForm.}">
-										<option >
-											
-										</option>
-									</select>
-									<select th:>
-										<option >
-											
-										</option>
+									<select th:name="|attendanceList[${stat.index}].trainingStartTime|" class="form-control">
+										<option th:each="trainingStartTime : ${attendanceForm.attendanceList}" th:value="${trainingStartTime.key}" th:inlne="text" class="form-control" 
+											th:selected="${trainingStartTime.key == dailyAttendanceForm.trainingStartTime}">[[${trainingStartTIme.value}]]</option>
 									</select>
 									<input type="" th:name="|attendanceList[${stat.index}].trainingStartTime|"
 									th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />

@@ -20,7 +20,7 @@ import jp.co.sss.lms.util.Constants;
  * 勤怠管理コントローラ
  * 
  * @author 東京ITスクール
- * @author Yasuhide Ito
+ * @author 伊藤康秀 - Task.25
  */
 @Controller
 @RequestMapping("/attendance")
@@ -118,6 +118,9 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		// 勤怠フォームの生成
+
+		// この時点ではAttendanceManagementDtoのなかのTrainingStartTime,TrainingEndTimeは文字列
+		// ex) TrainingStartTime == "09:00" TrainingEndTime == "18:00"
 		AttendanceForm attendanceForm = studentAttendanceService
 				.setAttendanceForm(attendanceManagementDtoList);
 		model.addAttribute("attendanceForm", attendanceForm);
@@ -128,6 +131,7 @@ public class AttendanceController {
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
 	 * 
+	 * @author 伊藤康秀 - Task.26
 	 * @param attendanceForm
 	 * @param model
 	 * @param result
@@ -141,16 +145,15 @@ public class AttendanceController {
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
-		
-		// attendanceFormのなかの’何か’をhh:mm形式に加工する
+
+		// Task.26のコード（中間レビューとは無縁）
 		attendanceForm = studentAttendanceService.formatConversion(attendanceForm);
-		
+
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		
-		
+
 		/*
 		 *  Task.26改修箇所。多分更新ボタン押下したら/attendance/detailに遷移するときに更新した
 		 *  ら全件取得modelにつめて返す
