@@ -86,6 +86,18 @@ public class AttendanceUtil {
 		return total;
 	}
 
+	public Integer reverseBlankTime(String time) {
+		
+		
+		return Integer.parseInt(time);
+	}
+	/**
+	 * 中抜け時間（文字列）を数字に変換
+	 * @author 伊藤康秀 - Task.26
+	 * */
+	
+	
+	
 	/**
 	 * 時刻分を丸めた本日日付を取得
 	 * 
@@ -123,14 +135,87 @@ public class AttendanceUtil {
 			} else {
 				time = hour + "時" + minute + "分";
 			}
-
 			map.put(i, time);
 
 			i = i + 15;
-
 		}
 		return map;
 	}
+	/**
+	 * 時間のプルダウンマップを生成
+	 * @author 伊藤康秀 - Task.26
+	 * @return 時間のプルダウンマップ
+	 * 
+	 * */
+	public LinkedHashMap<Integer, String> getHourMap() {
+		LinkedHashMap<Integer, String> map = new LinkedHashMap<>();
+		map.put(null, "");
+		for (int i = 0; i < 24; i++) {
+			map.put(i, String.format("%02d", i));
+		}
+		return map;
+		
+	}
+	/**
+	 * 分のプルダウンマップを生成
+	 * @author 伊藤康秀 - Task.26
+	 * @return 分のプルダウンマップ
+	 * */
+	public LinkedHashMap<Integer, String> getMinutesMap() {
+		LinkedHashMap<Integer, String> map = new LinkedHashMap<>();
+		map.put(null, "");
+		for (int i = 0; i < 60; i++) {
+			map.put(i, String.format("%02d", i));
+		}
+		return map;
+	}	
+	
+	
+	
+	/**
+	 * 時間（時）の切り出し
+	 * @author 伊藤康秀 - Task.26 
+	 * */
+	// String TrainingTime のhh:mmの hh だけとる
+	public Integer getHour(String trainingTime) {
+		
+		if(null == trainingTime) {
+			return null;
+		}
+		
+		String[] partsTime = trainingTime.split(":"); 
+		
+		if(null == partsTime[0]) {
+			return null;
+		}
+		Integer getHourValue = Integer.parseInt(partsTime[0]);
+		
+		return getHourValue;
+	}
+	
+	/**
+	 * 時間（分）の切り出し
+	 * @author 伊藤康秀 - Task.26
+	 *  
+	 * */
+	// String TrainingTime のhh:mmの mm だけとる
+		public Integer getMinute(String trainingTime) {
+		
+		if(null == trainingTime) {
+				return null;
+		}
+			
+		String[] partsTime = trainingTime.split(":"); 
+		
+		if(null == partsTime[1]) {
+			return null;
+		}
+		
+		Integer getMinuteValue = Integer.parseInt(partsTime[1]);
+		
+		return getMinuteValue;
+	}
+	
 
 	/**
 	 * 研修日の判定

@@ -5,8 +5,8 @@
 
 	<select id="findByLmsUserId"
 		resultType="jp.co.sss.lms.entity.TStudentAttendance">
-		SELECT *
-		
+		SELECT 
+			*	
 		FROM 
 			t_student_attendance
 		WHERE
@@ -19,8 +19,8 @@
 
 	<select id="findByLmsUserIdAndTrainingDate"
 		resultType="jp.co.sss.lms.entity.TStudentAttendance">
-		SELECT *
-		
+		SELECT
+			*
 		FROM
 			t_student_attendance
 		WHERE
@@ -57,6 +57,8 @@
 			t2.date ASC
 	</select>
 
+
+	<!-- 伊藤康秀 - Task.26 -->
 	<select id="notEnterCount" resultType="Integer">
 		SELECT 
 			COUNT(*)
@@ -67,8 +69,10 @@
 			AND delete_flg = #{deleteFlg}
 			AND <![CDATA[training_date < #{trainingDate}]]>
 			AND status != 1
-			AND (training_start_time =''OR training_end_time ='' OR
-				training_start_time IS NULL OR training_end_time IS NULL)
+			AND (training_start_time =''
+				OR training_end_time ='' 
+				OR training_start_time IS NULL 
+				OR training_end_time IS NULL)
 	</select>
 
 	<insert id="insert" parameterType="jp.co.sss.lms.entity.TStudentAttendance"

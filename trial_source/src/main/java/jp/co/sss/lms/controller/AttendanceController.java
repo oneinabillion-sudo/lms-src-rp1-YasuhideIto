@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
+import jp.co.sss.lms.form.DailyAttendanceForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.Constants;
 
@@ -20,7 +21,7 @@ import jp.co.sss.lms.util.Constants;
  * 勤怠管理コントローラ
  * 
  * @author 東京ITスクール
- * @author Yasuhide Ito
+ * @author 伊藤康秀 - Task.25
  */
 @Controller
 @RequestMapping("/attendance")
@@ -118,8 +119,13 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		// 勤怠フォームの生成
+
+		// この時点ではAttendanceManagementDtoのなかのTrainingStartTime,TrainingEndTimeは文字列
+		// ex) TrainingStartTime == "09:00" TrainingEndTime == "18:00"
 		AttendanceForm attendanceForm = studentAttendanceService
-				.setAttendanceForm(attendanceManagementDtoList);
+				.setAttendanceForm(attendanceManagementDtoList);// 乗り換え処理AttendanceManagementDto=>attendanceForm
+		
+	
 		model.addAttribute("attendanceForm", attendanceForm);
 
 		return "attendance/update";
@@ -128,6 +134,7 @@ public class AttendanceController {
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
 	 * 
+	 * @author 伊藤康秀 - Task.26
 	 * @param attendanceForm
 	 * @param model
 	 * @param result
@@ -137,20 +144,31 @@ public class AttendanceController {
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
-
+		
+		
+		studentAttendanceService.formatConversion(attendanceForm);
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
 		
-		// attendanceFormのなかの’何か’をhh:mm形式に加工する
-		attendanceForm = studentAttendanceService.formatConversion(attendanceForm);
+		
+		// 受け取ってるか確認
+		for(DailyAttendanceForm e : attendanceForm.getAttendanceList()) {
+			
+			System.out.println("1レコード分の出勤時間、退勤時間");
+			System.out.print(e.getTrainingStartTimeHour());
+			System.out.print(e.getTrainingStartTimeMinute());
+			System.out.println();
+			System.out.print(e.getTrainingEndTimeHour());
+			System.out.print(e.getTrainingEndTimeMinute());
+			System.out.println();
+		}
 		
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		
-		
+
 		/*
 		 *  Task.26改修箇所。多分更新ボタン押下したら/attendance/detailに遷移するときに更新した
 		 *  ら全件取得modelにつめて返す
