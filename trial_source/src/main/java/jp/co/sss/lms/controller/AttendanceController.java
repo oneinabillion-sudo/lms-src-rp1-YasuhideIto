@@ -134,10 +134,7 @@ public class AttendanceController {
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
 	 * 
 	 * @author 伊藤康秀 - Task.26
-<<<<<<< HEAD
 	 * @author 伊藤康秀 - Task.27
-=======
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 	 * @param attendanceForm
 	 * @param model
 	 * @param result
@@ -158,14 +155,7 @@ public class AttendanceController {
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
-<<<<<<< HEAD
 		
-=======
-
-		// Task.26のコード（中間レビューとは無縁）
-		attendanceForm = studentAttendanceService.formatConversion(attendanceForm);
-
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());

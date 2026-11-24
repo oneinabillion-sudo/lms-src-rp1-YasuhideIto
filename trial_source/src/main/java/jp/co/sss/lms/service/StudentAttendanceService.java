@@ -44,6 +44,8 @@ public class StudentAttendanceService {
 	@Autowired
 	private LoginUserUtil loginUserUtil;
 	@Autowired
+	private TrainingTime trainingTime;
+	@Autowired
 	private LoginUserDto loginUserDto;
 	@Autowired
 	private TStudentAttendanceMapper tStudentAttendanceMapper;
@@ -265,7 +267,6 @@ public class StudentAttendanceService {
 		attendanceForm.setUserName(loginUserDto.getUserName());
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
-<<<<<<< HEAD
 		
 		attendanceForm.setHourMap(attendanceUtil.getHourMap());
 		attendanceForm.setMinuteMap(attendanceUtil.getMinutesMap());
@@ -279,11 +280,6 @@ public class StudentAttendanceService {
 			String str = e.getValue();
 			System.out.println("来てるよ");
 			System.out.println("値は："+ value + "文字は：" + str);		
-=======
-		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
-			dailyAttendanceForm.setTrainingStartTime();
-
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 		}
 
 		// 途中退校している場合のみ設定
@@ -294,23 +290,7 @@ public class StudentAttendanceService {
 					dateUtil.dateToString(loginUserDto.getLeaveDate(), "yyyy年M月d日"));
 		}
 
-<<<<<<< HEAD
 		
-=======
-		// とりま時間、分マップ書く
-
-		Map<Integer, String> getHourMap = new LinkedHashMap<>();
-		for (int i = 0; i < 24; i++) {
-
-			getHourMap.put(i, String.format("%02d", i));
-		}
-
-		Map<Integer, String> getMinutesMap = new LinkedHashMap<>();
-		for (int j = 0; j < 59; j++) {
-
-			getMinutesMap.put(j, String.format("%02d", j));
-		}
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 
 		// 勤怠管理リストの件数分、日次の勤怠フォームに移し替え
 		for (AttendanceManagementDto attendanceManagementDto : attendanceManagementDtoList) {
@@ -319,31 +299,16 @@ public class StudentAttendanceService {
 					.setStudentAttendanceId(attendanceManagementDto.getStudentAttendanceId());
 			dailyAttendanceForm
 					.setTrainingDate(dateUtil.toString(attendanceManagementDto.getTrainingDate()));
-<<<<<<< HEAD
 			dailyAttendanceForm
 					.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
-=======
-
-			if (attendanceManagementDto.getTrainingStartTime() != null) {
-				dailyAttendanceForm
-						.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
-			}
-
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 			dailyAttendanceForm
-<<<<<<< HEAD
 					.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());			
-=======
-					.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
-
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 			if (attendanceManagementDto.getBlankTime() != null) {
 				dailyAttendanceForm.setBlankTime(attendanceManagementDto.getBlankTime());
 				dailyAttendanceForm.setBlankTimeValue(String.valueOf(
 						attendanceUtil.calcBlankTime(attendanceManagementDto.getBlankTime())));
 			}
 
-<<<<<<< HEAD
 			dailyAttendanceForm.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
 			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
 			
@@ -379,8 +344,6 @@ public class StudentAttendanceService {
 			
 			
 			
-=======
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 			dailyAttendanceForm.setStatus(String.valueOf(attendanceManagementDto.getStatus()));
 			dailyAttendanceForm.setNote(attendanceManagementDto.getNote());
 			dailyAttendanceForm.setSectionName(attendanceManagementDto.getSectionName());
@@ -399,7 +362,6 @@ public class StudentAttendanceService {
 	 * 
 	 * @author 伊藤康秀 - Task.25
 	 * @param attendanceForm
-<<<<<<< HEAD
 	 * */
 
 	public void formatConversion(AttendanceForm attendanceForm) {
@@ -438,10 +400,7 @@ public class StudentAttendanceService {
 	 * 入力チェック
 	 * @author 伊藤康秀 - Task.27
 	 * @param 
-=======
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 	 * */
-<<<<<<< HEAD
 	
 	public void updateInputCheck(AttendanceForm attendanceForm, BindingResult result) {
 		
@@ -524,31 +483,13 @@ public class StudentAttendanceService {
 				
 				
 				
-=======
-
-	public void formatConversion(AttendanceForm attendanceForm) {
-
-		for (DailyAttendanceForm dailyAttendanceFormList : attendanceForm.getAttendanceList()) {
-
-			if (null != dailyAttendanceFormList.getTrainingStartTime() &&
-					null != dailyAttendanceFormList.getTrainingEndTime()) {
-
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 			}
-<<<<<<< HEAD
 		
 			
-=======
-
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 		}
-<<<<<<< HEAD
 		
 
 		
-=======
-
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
 	}
 
 	/**
