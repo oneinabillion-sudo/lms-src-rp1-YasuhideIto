@@ -10,6 +10,7 @@ import lombok.Data;
  * 
  * @author 東京ITスクール
  */
+
 @Data
 public class AttendanceForm {
 
@@ -30,6 +31,7 @@ public class AttendanceForm {
 	/** 中抜け時間(プルダウン) */
 	private LinkedHashMap<Integer, String> blankTimes;
 	/** 日次の勤怠フォームリスト */
+	
 	private List<DailyAttendanceForm> attendanceList;
 	/** 時間マップ **/
 	private LinkedHashMap<Integer, String> hourMap;

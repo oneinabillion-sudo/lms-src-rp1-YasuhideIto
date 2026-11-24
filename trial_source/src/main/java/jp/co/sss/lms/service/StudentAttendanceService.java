@@ -9,6 +9,8 @@ import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
@@ -388,15 +390,106 @@ public class StudentAttendanceService {
 				}else {
 					dailyAttendanceForm.setTrainingEndTime(setEmptyStr);
 				}
-				
-				
-			System.out.println("ーーーーーーーーーーーーーーーーーーーーーー");
-			System.out.println(dailyAttendanceForm.getTrainingStartTime());
-			System.out.println(dailyAttendanceForm.getTrainingEndTime());
 			
 
 		}
 
+	}
+	
+	/**
+	 * 入力チェック
+	 * @author 伊藤康秀 - Task.27
+	 * @param 
+	 * */
+	
+	public void updateInputCheck(AttendanceForm attendanceForm, BindingResult result) {
+		
+		List<DailyAttendanceForm> userForm = attendanceForm.getAttendanceList();
+		
+		for(int i=0;i<userForm.size();i++) {
+			// 備考の文字数が１００字以上だった時
+			if(0 > userForm.get(i).getNote().length()
+			  && userForm.get(i).getNote().length() > Constants.MAX_NOTE_LENGTH) {
+				
+				// JavaDocリファレンスより
+				result.addError(new FieldError(
+				result.getObjectName(),
+						// ↓maybeここおかしいかも？
+						"attendanceList[" + i + "].note",// オブジェクト名　定型記述
+						messageUtil.getMessage(Constants.VALID_KEY_MAXBYTELENGTH,
+								new String[] {"備考", "100"})// エラーメッセージの組み立て
+						));
+			}
+			// 時刻の「hour」だけ、OR分の「minute」だけとかの片側未入力チェック
+			// TrainingTimeクラスのisValidTrainingTimeがif文でつかえるかも？
+			
+			// 出勤時間のhour OR minuteで片側未入力
+			if(userForm.get(i).getTrainingStartTimeHour() == null 
+			  || userForm.get(i).getTrainingStartTimeMinute() == null) {
+			
+				result.addError(new FieldError(
+				result.getObjectName(),
+				 		"attendanceList[" + i + "].note",
+				 		messageUtil.getMessage(Constants.INPUT_INVALID,
+				 				new String[] {"出勤時間"})
+					));
+			}
+			// 退勤時間のhour OR minuteで片側未入力
+			if(userForm.get(i).getTrainingEndTimeHour() == null 
+			  || userForm.get(i).getTrainingEndTimeMinute() == null) {
+				
+				result.addError(new FieldError(
+				result.getObjectName(),
+				 		"attendanceList[" + i + "].note",
+				 		messageUtil.getMessage(Constants.INPUT_INVALID,
+				 				new String[] {"退勤時間"})
+								
+					));
+			}
+			
+			// 出勤時間が未入力（hour & minute）&&  退勤時間が入力有(hour & minute)
+			if(null == userForm.get(i).getTrainingStartTimeHour() 
+			  && null == userForm.get(i).getTrainingStartTimeMinute()
+			  && userForm.get(i).getTrainingEndTimeHour() != null
+			  && userForm.get(i).getTrainingEndTimeMinute() != null){
+				
+				result.addError(new FieldError(
+				result.getObjectName(),
+				 		"attendanceList[" + i + "].note",
+				 		messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHINEMPTY)
+					));
+			}
+			
+			/*入力パラメータ．勤怠リスト[n]．出勤時間および退勤時間の両方に入力があり、
+			 * 入力パラメータ．勤怠リスト[n]．出勤時間　＞　退勤時間　の場合、
+			 * 下記エラーメッセージを追加設定
+			 * */
+			TrainingTime setTimeIn = new TrainingTime(userForm.get(i).getTrainingStartTimeHour(),
+			userForm.get(i).getTrainingStartTimeMinute());
+			
+			String changeStrIn = setTimeIn.getFormattedString();
+			TrainingTime setTimeOut = new TrainingTime(userForm.get(i).getTrainingStartTimeHour(),
+			userForm.get(i).getTrainingStartTimeMinute());
+			String changeStrOut = setTimeOut.getFormattedString();
+			
+			
+			if(null != userForm.get(i).getTrainingStartTimeHour() 
+			  && null != userForm.get(i).getTrainingStartTimeMinute()
+			  && null != userForm.get(i).getTrainingEndTimeHour()
+			  && null != userForm.get(i).getTrainingEndTimeMinute()
+			  ){
+				
+				
+				
+				
+				
+			}
+		
+			
+		}
+		
+
+		
 	}
 
 	/**

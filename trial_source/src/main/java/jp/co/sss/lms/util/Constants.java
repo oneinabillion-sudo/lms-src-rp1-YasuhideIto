@@ -288,6 +288,10 @@ public interface Constants {
 	public static final short CODE_VAL_ATWORK = 0;
 	/** 勤怠タイプ：退勤 */
 	public static final short CODE_VAL_LEAVING = 1;
+	
+	
+	/** 備考の文字数上限 **/
+	public static final int MAX_NOTE_LENGTH = 100; 
 
 	/** チケットに対する状態：着手中 */
 	public static final Short CODE_VAL_TICKET_STATUS_START = 1;

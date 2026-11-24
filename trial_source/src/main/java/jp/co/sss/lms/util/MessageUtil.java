@@ -38,6 +38,8 @@ public class MessageUtil {
 	 * @param values
 	 * @return メッセージ
 	 */
+	
+	// Task.27で使用して
 	public String getMessage(String messageId, String[] values) {
 		String message = messageSource.getMessage(messageId, values, Locale.getDefault());
 		if (message == null || message.equals("")) {

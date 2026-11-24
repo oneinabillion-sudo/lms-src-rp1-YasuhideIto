@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
-import jp.co.sss.lms.form.DailyAttendanceForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.Constants;
 
@@ -135,34 +134,27 @@ public class AttendanceController {
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
 	 * 
 	 * @author 伊藤康秀 - Task.26
+	 * @author 伊藤康秀 - Task.27
 	 * @param attendanceForm
 	 * @param model
 	 * @param result
-	 * @return 勤怠管理画面
+	 * @return 勤怠管理画面 - Task.26
 	 * @throws ParseException
 	 */
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
 		
-		
+		// 出退勤時間の入力形式の変更
 		studentAttendanceService.formatConversion(attendanceForm);
+		
+		// 更新させる前に入力チェック
+		studentAttendanceService.updateInputCheck(attendanceForm, result);
+		
+		
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
-		
-		
-		// 受け取ってるか確認
-		for(DailyAttendanceForm e : attendanceForm.getAttendanceList()) {
-			
-			System.out.println("1レコード分の出勤時間、退勤時間");
-			System.out.print(e.getTrainingStartTimeHour());
-			System.out.print(e.getTrainingStartTimeMinute());
-			System.out.println();
-			System.out.print(e.getTrainingEndTimeHour());
-			System.out.print(e.getTrainingEndTimeMinute());
-			System.out.println();
-		}
 		
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
