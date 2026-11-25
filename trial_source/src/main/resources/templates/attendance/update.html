@@ -2,15 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" 
 	th:replace="~{/common/layout :: layout(~{::title},~{::body/content()})}">
 <head>
-<meta charset="UTF-8">
-<title>勤怠情報変更｜LMS</title>
+	<script src="/src/main/resources/static/js/attendance.js" defer></script>
+	<meta charset="UTF-8">
+	<title>勤怠情報変更｜LMS</title>
 </head>
-<body>
-
-	<th:block th:if="${session.loginUserDto.role == '0001'}">
-		<h2>勤怠管理</h2>
-	</th:block>
-
+<body>	
 	<th:block th:if="${session.loginUserDto.role != '0001'}">
 		<h2>勤怠管理 <small>( [[${attendanceForm.userName}]] )</small></h2>
 		<th:block th:if="${session.loginUserDto.leaveFlg == '1'}">
@@ -22,6 +18,7 @@
 		<div class="bs-component col-sm-12">
 
 			<form th:action="@{/attendance/update}" method="post">
+				
 				<table class="table table-hover dataTable no-footer">
 					<thead>
 						<tr>
@@ -50,21 +47,9 @@
 								<td class="w140">[[${dailyAttendanceForm.sectionName}]]</td>
 									<!--      Task.26改修範囲begin           -->
 									
-<<<<<<< HEAD
-								<td class="w60"></tdc>
-=======
-									
-								<td class="w70">
-									<select th:name="|attendanceList[${stat.index}].trainingStartTime|" class="form-control">
-										<option th:each="trainingStartTime : ${attendanceForm.attendanceList}" th:value="${trainingStartTime.key}" th:inlne="text" class="form-control" 
-											th:selected="${trainingStartTime.key == dailyAttendanceForm.trainingStartTime}">[[${trainingStartTIme.value}]]</option>
-									</select>
-									<input type="" th:name="|attendanceList[${stat.index}].trainingStartTime|"
-									th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />
-								</td>
->>>>>>> branch 'main' of https://github.com/oneinabillion-sudo/lms-src-rp1-YasuhideIto.git
-								
-								<!--  ↓出勤時間時間-->	
+
+								<td class="w60"></td>
+					
 								<td class="w70">
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|" class="form-control">
 										<option th:each="hourMap : ${attendanceForm.hourMap}" th:value="${hourMap.key}" th:inline="text" class="form-control"
@@ -72,16 +57,17 @@
 										</option>
 									</select>
 								</td>
+								
 								<td>:</td>
 								
-								
-								<td>	
+								<td>
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeMinute|" class="form-control">
 										<option th:each="minuteMap : ${attendanceForm.minuteMap}" th:value="${minuteMap.key}" th:inline="text" class="form-control"
 											th:selected="${minuteMap.key == dailyAttendanceForm.trainingStartTimeMinute}">[[${minuteMap.value}]]				
 										</option>
 									</select>
 								</td>
+								
 								<!--  ↓退勤時間-->
 								<td>
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeHour|" class="form-control">
@@ -90,6 +76,7 @@
 										</option>
 									</select>
 								</td>
+								
 								<td>:</td>
 								
 															
@@ -114,6 +101,12 @@
 								<td class="w140">
 									<input type="text" th:name="|attendanceList[${stat.index}].note|" th:value="${dailyAttendanceForm.note}" class="form-control"></input>
 								</td>
+								<div th:if="${#fields.hasErrors('attendanceForm.attendanceList[' + stat.index + '].note')}">
+							    <p th:each="err : ${#fields.errors('attendanceForm.attendanceList[' + stat.index + '].note')}"
+							       th:text="${err}"
+							       style="color: red;">	
+							    </p>
+</div>
 							</tr>
 						</th:block>
 					</tbody>
@@ -126,7 +119,7 @@
 					<th:block th:if="${session.loginUserDto.role != '0001'}">
 						<input type="submit" value="戻る" name="indexCompany" class="btn btn-default" />
 					</th:block>
-					<input type="submit" value="更新" name="complete" class="btn btn-info" />
+					<input type="submit" value="更新" name="complete" class="btn btn-info" id="showConfirmDialog" />
 				</div>
 
 			</form>

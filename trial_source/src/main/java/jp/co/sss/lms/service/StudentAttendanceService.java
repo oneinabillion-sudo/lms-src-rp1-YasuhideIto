@@ -1,10 +1,11 @@
 package jp.co.sss.lms.service;
 
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +89,11 @@ public class StudentAttendanceService {
 
 		try {
 			
-			String todayStr2 = dateUtil.toString(new Date(), "yyyy年MM月dd日");
+			String todayStr2 = dateUtil.toString(new Date());
+			
 			Date todayDate = dateUtil.parse(todayStr2);
+			
+			System.out.println("notEnterCheckの変換後：" + todayDate);
 			
 			int nECount = tStudentAttendanceMapper.notEnterCount(
 					loginUserDto.getLmsUserId(), Constants.DB_FLG_FALSE, todayDate);
@@ -99,6 +103,8 @@ public class StudentAttendanceService {
 			// sdf.parse()は例外処理として扱われるためれ
 			e.printStackTrace();
 			// エラー時
+			
+			System.out.print("例外をキャッチしたよーーーーーーーーーーーーーーーーーーーーーー");
 			return false;
 		}
 		
@@ -271,16 +277,6 @@ public class StudentAttendanceService {
 		attendanceForm.setHourMap(attendanceUtil.getHourMap());
 		attendanceForm.setMinuteMap(attendanceUtil.getMinutesMap());
 		
-		
-		System.out.print("Hello");
-		Map<Integer, String> checkMap = attendanceForm.getHourMap();
-		
-		for(Map.Entry<Integer, String> e : checkMap.entrySet()) {
-			Integer value = e.getKey();
-			String str = e.getValue();
-			System.out.println("来てるよ");
-			System.out.println("値は："+ value + "文字は：" + str);		
-		}
 
 		// 途中退校している場合のみ設定
 		if (loginUserDto.getLeaveDate() != null) {
@@ -332,16 +328,7 @@ public class StudentAttendanceService {
 						.getHour(attendanceManagementDto.getTrainingEndTime()));
 				dailyAttendanceForm.setTrainingEndTimeMinute(attendanceUtil
 						.getMinute(attendanceManagementDto.getTrainingEndTime()));
-			}
-
-//				
-				
-				
-				System.out.println("dailyAttendanceFormにsetした値:出勤時間"+dailyAttendanceForm
-						.getTrainingStartTimeHour()+" : "+ dailyAttendanceForm.getTrainingStartTimeMinute());
-				System.out.println("dailyAttendanceFormにsetした値:退勤時間"+dailyAttendanceForm
-						.getTrainingEndTimeHour()+" : "+ dailyAttendanceForm.getTrainingEndTimeMinute());
-			
+			}			
 			
 			
 			dailyAttendanceForm.setStatus(String.valueOf(attendanceManagementDto.getStatus()));
@@ -371,6 +358,7 @@ public class StudentAttendanceService {
 			
 				String setEmptyStr = "";
 			
+				// ここでHour + Minute を HH:mmに変換してる
 				Integer startTimeHour = dailyAttendanceForm.getTrainingStartTimeHour();
 				Integer startTimeMinute = dailyAttendanceForm.getTrainingStartTimeMinute();
 				
@@ -404,13 +392,22 @@ public class StudentAttendanceService {
 	
 	public void updateInputCheck(AttendanceForm attendanceForm, BindingResult result) {
 		
+		System.out.println("ーーーーーーーーーーーーーーーupdateInputCheckが呼ばれましたーーーーーーーーーーーーーー");
 		List<DailyAttendanceForm> userForm = attendanceForm.getAttendanceList();
 		
 		for(int i=0;i<userForm.size();i++) {
-			// 備考の文字数が１００字以上だった時
+			
+			System.out.println(i + "行のレコード");
+			
+			String startTimeStr = userForm.get(i).getTrainingStartTime();
+			String endTimeStr = userForm.get(i).getTrainingEndTime();
+			
+			// １．備考の文字数が１００字以上だった時
 			if(0 > userForm.get(i).getNote().length()
 			  && userForm.get(i).getNote().length() > Constants.MAX_NOTE_LENGTH) {
 				
+				System.out.println("Service：updateInputCheckでエラーを受け取りました");
+				System.out.println("2-1内容：備考が100文字以上の時");
 				// JavaDocリファレンスより
 				result.addError(new FieldError(
 				result.getObjectName(),
@@ -420,72 +417,171 @@ public class StudentAttendanceService {
 								new String[] {"備考", "100"})// エラーメッセージの組み立て
 						));
 			}
-			// 時刻の「hour」だけ、OR分の「minute」だけとかの片側未入力チェック
-			// TrainingTimeクラスのisValidTrainingTimeがif文でつかえるかも？
+			// ２．時刻の「hour」だけ、OR分の「minute」だけとかの片側未入力チェック
 			
-			// 出勤時間のhour OR minuteで片側未入力
-			if(userForm.get(i).getTrainingStartTimeHour() == null 
-			  || userForm.get(i).getTrainingStartTimeMinute() == null) {
+			// ２－１出勤時間のhour OR minuteで片側未入力
+			if(null == userForm.get(i).getTrainingStartTimeHour() 
+			  && userForm.get(i).getTrainingStartTimeMinute() != null) {
 			
+				System.out.println("Service：updateInputCheckでエラーを受け取りました");
+				System.out.println("2-2内容：HourまたはMinuteの未入力");
+				
 				result.addError(new FieldError(
 				result.getObjectName(),
-				 		"attendanceList[" + i + "].note",
+				 		"attendanceList[" + i + "].trainingStartTime",
 				 		messageUtil.getMessage(Constants.INPUT_INVALID,
 				 				new String[] {"出勤時間"})
 					));
 			}
-			// 退勤時間のhour OR minuteで片側未入力
-			if(userForm.get(i).getTrainingEndTimeHour() == null 
-			  || userForm.get(i).getTrainingEndTimeMinute() == null) {
-				
-				result.addError(new FieldError(
-				result.getObjectName(),
-				 		"attendanceList[" + i + "].note",
-				 		messageUtil.getMessage(Constants.INPUT_INVALID,
-				 				new String[] {"退勤時間"})
-								
+			// ２－２出勤時間のhour OR minuteで片側未入力
+			if(null != userForm.get(i).getTrainingStartTimeHour() 
+						  && userForm.get(i).getTrainingStartTimeMinute() == null) {
+						
+			    System.out.println("Service：updateInputCheckでエラーを受け取りました");
+			    System.out.println("3-1内容：HourまたはMinuteの未入力");
+			    
+			    result.addError(new FieldError(
+			    result.getObjectName(),
+					 	"attendanceList[" + i + "].trainingStartTime",
+						messageUtil.getMessage(Constants.INPUT_INVALID,
+								new String[] {"出勤時間"})
 					));
 			}
 			
-			// 出勤時間が未入力（hour & minute）&&  退勤時間が入力有(hour & minute)
-			if(null == userForm.get(i).getTrainingStartTimeHour() 
-			  && null == userForm.get(i).getTrainingStartTimeMinute()
-			  && userForm.get(i).getTrainingEndTimeHour() != null
-			  && userForm.get(i).getTrainingEndTimeMinute() != null){
+			
+			// ３．退勤時間のhour OR minuteで片側未入力
+			
+			// ３－１
+			if(null == userForm.get(i).getTrainingEndTimeHour()
+			  && null != userForm.get(i).getTrainingEndTimeMinute()) {
+				
+				System.out.println("Service：updateInputCheckでエラーを受け取りました");
+				System.out.println("3-2内容：片側未入力");
 				
 				result.addError(new FieldError(
 				result.getObjectName(),
-				 		"attendanceList[" + i + "].note",
+				 		"attendanceList[" + i + "].trainingEndTime",
+				 		messageUtil.getMessage(Constants.INPUT_INVALID,
+				 				new String[] {"退勤時間"})			
+					));
+			}
+			// ３－２
+			if(null != userForm.get(i).getTrainingEndTimeHour()
+				  && null == userForm.get(i).getTrainingEndTimeMinute()) {
+					
+				System.out.println("Service：updateInputCheckでエラーを受け取りました");
+				System.out.println("3-2内容：片側未入力");
+					
+				result.addError(new FieldError(
+				result.getObjectName(),
+				 		"attendanceList[" + i + "].trainingEndTime",
+				 		messageUtil.getMessage(Constants.INPUT_INVALID,
+				 				new String[] {"退勤時間"})			
+					));
+			}
+			
+			// ４．出勤時間が未入力（hour & minute）&&  退勤時間が入力有(hour & minute)
+			if(null == userForm.get(i).getTrainingStartTimeHour() 
+			  && null == userForm.get(i).getTrainingStartTimeMinute()
+			  && null != userForm.get(i).getTrainingEndTimeHour()
+			  && null != userForm.get(i).getTrainingEndTimeMinute()){
+				
+				System.out.println("Service：updateInputCheckでエラーを受け取りました");
+				System.out.println("４.内容：出退勤どちらかが未入力");
+				
+				
+				result.addError(new FieldError(
+				result.getObjectName(),
+				 		"attendanceList[" + i + "].trainingStartTime",
 				 		messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHINEMPTY)
 					));
 			}
 			
-			/*入力パラメータ．勤怠リスト[n]．出勤時間および退勤時間の両方に入力があり、
-			 * 入力パラメータ．勤怠リスト[n]．出勤時間　＞　退勤時間　の場合、
-			 * 下記エラーメッセージを追加設定
+			/*５．入力パラメータ．勤怠リスト[n]．出勤時間および退勤時間の両方に入力があり、
+			 * 　 入力パラメータ．勤怠リスト[n]．出勤時間　＞　退勤時間　の場合、
+			 * 　 下記エラーメッセージを追加設定
 			 * */
-			TrainingTime setTimeIn = new TrainingTime(userForm.get(i).getTrainingStartTimeHour(),
-			userForm.get(i).getTrainingStartTimeMinute());
-			
-			String changeStrIn = setTimeIn.getFormattedString();
-			TrainingTime setTimeOut = new TrainingTime(userForm.get(i).getTrainingStartTimeHour(),
-			userForm.get(i).getTrainingStartTimeMinute());
-			String changeStrOut = setTimeOut.getFormattedString();
-			
+			Date trainingStartTime = dateUtil.stringToTimestamp(userForm.get(i).getTrainingStartTime()
+					, "HH:mm");
+			Date trainingEndTime = dateUtil.stringToTimestamp(userForm.get(i).getTrainingEndTime()
+					, "HH:mm");
 			
 			if(null != userForm.get(i).getTrainingStartTimeHour() 
 			  && null != userForm.get(i).getTrainingStartTimeMinute()
 			  && null != userForm.get(i).getTrainingEndTimeHour()
 			  && null != userForm.get(i).getTrainingEndTimeMinute()
-			  ){
+			  && trainingStartTime.after(trainingEndTime)){
+				  
+			// 上のif文で問題発生 出勤のHour + minuteと退勤のHour + minuteを比較する方法がわからない
+			// 解決策：hourをminに直して分数で比較する
+			// すでにHour, Minuteは各String型のフィールドに変換されているのでそれを利用できないか
+				
+				System.out.println("Service：updateInputCheckでエラーを受け取りました");
+				System.out.println("5.内容：出退勤の時間が誤っているとき");
 				
 				
-				
-				
-				
+			String iStr = String.valueOf(i);
+			result.addError(new FieldError(
+			result.getObjectName(),
+				 		"attendanceList[" + i + "].trainingStartTime",
+				 		messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE
+				 				,new String[] {iStr})
+					));	
 			}
-		
+			// ６．中抜け時間に入力があるのに、出勤時間および（AND）退勤時間が
+			//     未入力の場合
+			if(null != userForm.get(i).getBlankTime()
+					&& null == startTimeStr
+					&& null == endTimeStr) {
+				
+				System.out.println("Service：updateInputCheckでエラーを受け取りました");
+				System.out.println("６.内容：中抜け時間：有、出退勤：無とき");
+				
+				result.addError(new FieldError(
+				result.getObjectName(),
+					 		"attendanceList[" + i + "].blankTimeValue",
+					 		messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE
+							,new String[] {"出勤時間","退勤時間"})
+					));	
+			}
 			
+			// ７．中抜け時間が勤務時間より多い場合（出勤時間～退勤時間までの時間を超える場合）
+				
+			if(null != userForm.get(i).getBlankTime()) {
+				LocalTime start = LocalTime.parse(startTimeStr);
+				LocalTime end = LocalTime.parse(endTimeStr);
+				
+				// 差を出す
+				Duration duration = Duration.between(start, end);
+				
+				System.out.println("勤務時間" + duration.toMinutes()+ "分");
+				System.out.println("中抜け時間"+ userForm.get(i).getBlankTime() + "分");
+				
+				long toMinute = duration.toMinutes();
+				
+				Integer compareMinute = Math.toIntExact(toMinute); 
+						
+				
+				if(userForm.get(i).getBlankTime() > compareMinute) {
+					
+					System.out.println("Service：updateInputCheckでエラーを受け取りました");
+					System.out.println("7.内容：中抜け時間が勤務時間より大きい時");
+					
+					result.addError(new FieldError(
+					result.getObjectName(),
+						 		"attendanceList[" + i + "].blankTimeValue",
+						 		messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_BLANKTIMEERROR)
+						));	
+					
+				}	
+				
+				if(result.hasErrors()) {
+					continue;
+				}
+				
+				
+	
+			}
 		}
 		
 
