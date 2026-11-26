@@ -145,12 +145,14 @@
 								</td>
 								<td class="w70">[[${dailyAttendanceForm.statusDispName}]]</td>
 								<td class="w140">
-									<input type="text" th:name="|attendanceList[${stat.index}].note|" th:value="${dailyAttendanceForm.note}" class="form-control"
-									 th:style="${#fields.hasErrors('attendanceForm.attendanceList[__${stat.index}__].note')} ? 'background-color: #fdd; border: 1px solid red;' : '' "></input>
-								</td>					    
-	 </div>
+									<input type="text" 
+										th:name="|attendanceList[${stat.index}].note|"
+										th:value="${!(#fields.hasErrors('attendanceForm.attendanceList[__${stat.index}__].note'))} ? ${dailyAttendanceForm.note} : ''" 
+										class="form-control"
+									 	th:style="${#fields.hasErrors('attendanceForm.attendanceList[__${stat.index}__].note')} ? 'background-color: #fdd; border: 1px solid red;' : ''"></input>
+								</td>
 							</tr>
-						</th>
+						</th:block>
 					</tbody>
 				</table>
 

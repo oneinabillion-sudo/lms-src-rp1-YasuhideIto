@@ -45,8 +45,6 @@ public class StudentAttendanceService {
 	@Autowired
 	private LoginUserUtil loginUserUtil;
 	@Autowired
-	private TrainingTime trainingTime;
-	@Autowired
 	private LoginUserDto loginUserDto;
 	@Autowired
 	private TStudentAttendanceMapper tStudentAttendanceMapper;
@@ -448,11 +446,13 @@ public class StudentAttendanceService {
 			    System.out.println("Service：updateInputCheckでエラーを受け取りました");
 			    System.out.println("3-1内容：HourまたはMinuteの未入力");
 			    
-			    result.addError(new FieldError(result.getObjectName(),
-					 	"attendanceList[" + i + "].trainingStartTimeMinute",
-						messageUtil.getMessage(Constants.INPUT_INVALID,
-								new String[] {"出勤時間"})
-					));
+			    result.addError(new FieldError(
+				result.getObjectName(),
+				 		"attendanceList[" + i + "].trainingStartTimeMinute",
+				 		messageUtil.getMessage(Constants.INPUT_INVALID,
+						 				new String[] {"出勤時間"})
+							));
+			   
 			}
 			
 			
